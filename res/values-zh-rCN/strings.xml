@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+ * Copyright (C) 2013 The Evervolv Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+        <!-- Generic Strings, multiple uses -->
+    <string name="app_name">性能</string>
+    <string name="apply">应用</string>
+    <string name="okay">确定</string>
+    <string name="cancel">取消</string>
+    <string name="reboot">重启</string>
+    <string name="later">稍后</string>
+    <string name="flash">Flash</string>
+
+        <!-- Main app strings ( immediate tabs ) -->
+    <string name="tab_title_performance">性能</string>
+
+        <!-- Performance >> MemoryManagement -->
+    <string name="pref_memory_management_title">内存管理</string>
+    <string name="pref_memory_management_summary">自定义内存使用以改变系统性能</string>
+    <string name="pref_zram_title">zRam</string>
+    <string name="pref_zram_summary">压缩内存以增加虚拟容量 (需要重启)</string>
+    <string name="pref_ksm_title">KSM</string>
+    <string name="pref_ksm_summary">KSM 降低系统对内存的要求并提高性能</string>
+
+        <!-- Performance >> Processor -->
+    <string name="processor_title">处理器</string>
+    <string name="pref_processor_title">处理器</string>
+    <string name="pref_processor_summary">更改 CPU 调节器以及时钟速度</string>
+    <string name="pref_cpu_cur_freq_title">当前 CPU 频率</string>
+    <string name="pref_cpu_governors_title">CPU 调节器</string>
+    <string name="pref_cpu_governors_summary">%S</string>
+    <string name="pref_cpu_min_freq_title">最低 CPU 频率</string>
+    <string name="pref_cpu_min_freq_summary">%s</string>
+    <string name="pref_cpu_max_freq_title">最高 CPU 频率</string>
+    <string name="pref_cpu_max_freq_summary">%s</string>
+    <string name="pref_cpu_set_on_boot">启动时设置</string>
+    <string name="pref_cpu_set_on_boot_summary">在启动时恢复当前的 CPU 设置</string>
+
+</resources>
