@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.toolbox.tabs;
+package com.android.performance.tabs;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -24,11 +24,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.android.toolbox.fragments.PerformanceMain;
+import com.android.performance.fragments.PerformanceMain;
 
 public class PerformanceTab extends PreferenceFragment {
 
-    private static final String TAG = "Toolbox";
+    private static final String TAG = "Performance";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

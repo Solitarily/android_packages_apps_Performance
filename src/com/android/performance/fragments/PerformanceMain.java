@@ -1,4 +1,4 @@
-package com.android.toolbox.fragments;
+package com.android.performance.fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,13 +11,13 @@ import android.preference.PreferenceCategory;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
-import com.android.toolbox.R;
-import com.android.toolbox.misc.FileUtil;
+import com.android.performance.R;
+import com.android.performance.misc.FileUtil;
 
 import java.io.File;
 
 public class PerformanceMain extends PreferenceFragment implements Preference.OnPreferenceChangeListener  {
-    private static final String TAG = "Toolbox";
+    private static final String TAG = "Performance";
 
     public static final String KSM_RUN_FILE = "/sys/kernel/mm/ksm/run";
     public static final String KSM_PREF = "pref_ksm";

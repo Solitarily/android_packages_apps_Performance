@@ -7,7 +7,7 @@ LOCAL_STATIC_JAVA_LIBRARIES += android-support-v13 android-support-v4
 
 LOCAL_SRC_FILES := $(call all-java-files-under, src)
 
-LOCAL_PACKAGE_NAME := Toolbox
+LOCAL_PACKAGE_NAME := Performance
 LOCAL_CERTIFICATE := platform
 
 include $(BUILD_PACKAGE)

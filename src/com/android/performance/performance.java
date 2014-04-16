@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.toolbox;
+package com.android.performance;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -37,12 +37,12 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 
-import com.android.toolbox.R;
-import com.android.toolbox.tabs.PerformanceTab;
+import com.android.performance.R;
+import com.android.performance.tabs.PerformanceTab;
 
 import java.util.ArrayList;
 
-public class Toolbox extends FragmentActivity {
+public class performance extends FragmentActivity {
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -51,7 +51,7 @@ public class Toolbox extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.toolbox);
+        setContentView(R.layout.performance);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
 
@@ -77,7 +77,7 @@ public class Toolbox extends FragmentActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.toolbox_menu, menu);
+        inflater.inflate(R.menu.performance_menu, menu);
         MenuItem item = menu.findItem(R.id.menu_switch);
 
         Switch toolboxSwitch = (Switch) item.getActionView();

@@ -1,4 +1,4 @@
-package com.android.toolbox.custom;
+package com.android.performance.custom;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.NumberPicker;
 
-import com.android.toolbox.R;
+import com.android.performance.R;
 
 public class NumberPickerPreference extends DialogPreference {
 

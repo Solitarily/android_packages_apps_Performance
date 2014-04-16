@@ -1,4 +1,4 @@
-package com.android.toolbox.custom;
+package com.android.performance.custom;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,11 +21,11 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.toolbox.R;
+import com.android.performance.R;
 
 public class GalleryPickerPreference extends Preference implements OnClickListener {
 
-    private static final String TAG = "Toolbox";
+    private static final String TAG = "Performance";
 
     private static final int DEFAULT_X = 240;
     private static final int DEFAULT_Y = 400;

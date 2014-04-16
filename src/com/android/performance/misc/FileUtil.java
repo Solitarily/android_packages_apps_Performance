@@ -1,4 +1,4 @@
-package com.android.toolbox.misc;
+package com.android.performance.misc;
 
 import android.util.Log;
 
@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class FileUtil {
 
-    private static final String TAG = "Toolbox";
+    private static final String TAG = "Performance";
 
     public static boolean fileExists(String filename) {
         return new File(filename).exists();

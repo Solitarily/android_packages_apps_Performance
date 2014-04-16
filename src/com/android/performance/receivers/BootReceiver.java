@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.toolbox.receivers;
+package com.android.performance.receivers;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -24,8 +24,8 @@ import android.os.SystemProperties;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.android.toolbox.fragments.PerformanceMain;
-import com.android.toolbox.misc.FileUtil;
+import com.android.performance.fragments.PerformanceMain;
+import com.android.performance.misc.FileUtil;
 
 import java.lang.Integer;
 import java.util.Arrays;
@@ -33,7 +33,7 @@ import java.util.List;
 
 public class BootReceiver extends BroadcastReceiver {
 
-    private static final String TAG = "Toolbox";
+    private static final String TAG = "Performance";
 
     private static final String CPU_SETTINGS_PROP = "sys.cpufreq.restored";
     private static final String KSM_SETTINGS_PROP = "sys.ksm.restored";
