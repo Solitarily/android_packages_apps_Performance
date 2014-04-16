@@ -42,7 +42,7 @@ import com.android.performance.tabs.PerformanceTab;
 
 import java.util.ArrayList;
 
-public class performance extends FragmentActivity {
+public class Performance extends FragmentActivity {
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
@@ -62,7 +62,7 @@ public class performance extends FragmentActivity {
         bar.setDisplayHomeAsUpEnabled(true);
 
         mTabsAdapter = new TabsAdapter(this, mViewPager);
-        mTabsAdapter.addTab(bar.newTab().setText(R.string.tab_title_performance),
+        mTabsAdapter.addTab(bar.newTab(),
                 PerformanceTab.class, null);
         mCr = getApplicationContext().getContentResolver();
     }

@@ -27,9 +27,6 @@
     <string name="later">稍后</string>
     <string name="flash">Flash</string>
 
-        <!-- Main app strings ( immediate tabs ) -->
-    <string name="tab_title_performance">性能</string>
-
         <!-- Performance >> MemoryManagement -->
     <string name="pref_memory_management_title">内存管理</string>
     <string name="pref_memory_management_summary">自定义内存使用以改变系统性能</string>

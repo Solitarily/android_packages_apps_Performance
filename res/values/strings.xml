@@ -27,9 +27,6 @@
     <string name="later">Later</string>
     <string name="flash">Flash</string>
 
-        <!-- Main app strings ( immediate tabs ) -->
-    <string name="tab_title_performance">Performance</string>
-
         <!-- Performance >> MemoryManagement -->
     <string name="pref_memory_management_title">Memory management</string>
     <string name="pref_memory_management_summary">Customize memory usage to alter system performance</string>
