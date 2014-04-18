@@ -112,7 +112,8 @@ public class MemoryManagementMain extends PreferenceFragment implements Preferen
         return false;
     }
 
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    @Override
+	public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference == mzRAM) {
             if (newValue != null) {
                 SystemProperties.set(ZRAM_PERSIST_PROP, (String) newValue);

@@ -97,7 +97,8 @@ public class IOSchedulerMain extends PreferenceFragment implements Preference.On
         }
     }
 
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    @Override
+	public boolean onPreferenceChange(Preference preference, Object newValue) {
         String fname = "";
 
         if (newValue != null) {

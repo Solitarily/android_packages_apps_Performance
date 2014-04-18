@@ -62,7 +62,8 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
     private class CurCPUThread extends Thread {
         private boolean mInterrupt = false;
 
-        public void interrupt() {
+        @Override
+		public void interrupt() {
             mInterrupt = true;
         }
 
@@ -84,7 +85,8 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
 
     @SuppressLint("HandlerLeak")
 	private Handler mCurCPUHandler = new Handler() {
-        public void handleMessage(Message msg) {
+        @Override
+		public void handleMessage(Message msg) {
             mCurFrequencyPref.setSummary(toMHz((String) msg.obj));
         }
     };
@@ -119,7 +121,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
         PreferenceScreen prefScreen = getPreferenceScreen();
 
         mGovernorPref = (ListPreference) prefScreen.findPreference(GOV_PREF);
-        mCurFrequencyPref = (Preference) prefScreen.findPreference(FREQ_CUR_PREF);
+        mCurFrequencyPref = prefScreen.findPreference(FREQ_CUR_PREF);
         mMinFrequencyPref = (ListPreference) prefScreen.findPreference(FREQ_MIN_PREF);
         mMaxFrequencyPref = (ListPreference) prefScreen.findPreference(FREQ_MAX_PREF);
 
@@ -224,7 +226,8 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
         }
     }
 
-    public boolean onPreferenceChange(Preference preference, Object newValue) {
+    @Override
+	public boolean onPreferenceChange(Preference preference, Object newValue) {
         initFreqCapFiles();
 
         String fname = "";

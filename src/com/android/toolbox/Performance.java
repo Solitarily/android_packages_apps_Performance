@@ -125,11 +125,13 @@ public class Performance extends FragmentActivity {
             return Fragment.instantiate(mContext, info.clss.getName(), info.args);
         }
 
-        public void onPageSelected(int position) {
+        @Override
+		public void onPageSelected(int position) {
             mActionBar.setSelectedNavigationItem(position);
         }
 
-        public void onTabSelected(Tab tab, FragmentTransaction ft) {
+        @Override
+		public void onTabSelected(Tab tab, FragmentTransaction ft) {
             Object tag = tab.getTag();
             for (int i=0; i<mTabs.size(); i++) {
                 if (mTabs.get(i) == tag) {
@@ -138,10 +140,14 @@ public class Performance extends FragmentActivity {
             }
         }
 
-        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
-        public void onPageScrollStateChanged(int state) { }
-        public void onTabUnselected(Tab tab, FragmentTransaction ft) { }
-        public void onTabReselected(Tab tab, FragmentTransaction ft) { }
+        @Override
+		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+        @Override
+		public void onPageScrollStateChanged(int state) { }
+        @Override
+		public void onTabUnselected(Tab tab, FragmentTransaction ft) { }
+        @Override
+		public void onTabReselected(Tab tab, FragmentTransaction ft) { }
     }
 
 }
