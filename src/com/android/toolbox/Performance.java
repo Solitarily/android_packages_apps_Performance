@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.performance;
+package com.android.toolbox;
 
 import android.app.ActionBar;
 import android.app.ActionBar.Tab;
@@ -22,23 +22,16 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.app.NotificationManager;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
-import android.widget.Switch;
-
-import com.android.performance.R;
-import com.android.performance.tabs.PerformanceTab;
+import com.android.toolbox.R;
+import com.android.toolbox.tabs.IOSchedulerTab;
+import com.android.toolbox.tabs.MemoryManagementTab;
+import com.android.toolbox.tabs.ProcessorTab;
 
 import java.util.ArrayList;
 
@@ -46,12 +39,10 @@ public class Performance extends FragmentActivity {
 
     private ViewPager mViewPager;
     private TabsAdapter mTabsAdapter;
-    private ContentResolver mCr;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.performance);
+        setContentView(R.layout.toolbox);
 
         mViewPager = (ViewPager) findViewById(R.id.view_pager);
 
@@ -62,9 +53,13 @@ public class Performance extends FragmentActivity {
         bar.setDisplayHomeAsUpEnabled(true);
 
         mTabsAdapter = new TabsAdapter(this, mViewPager);
-        mTabsAdapter.addTab(bar.newTab(),
-                PerformanceTab.class, null);
-        mCr = getApplicationContext().getContentResolver();
+        mTabsAdapter.addTab(bar.newTab().setText(R.string.io_scheds_title),
+        		IOSchedulerTab.class, null);
+        mTabsAdapter.addTab(bar.newTab().setText(R.string.processor_title),
+        		ProcessorTab.class, null);
+        mTabsAdapter.addTab(bar.newTab().setText(R.string.memory_management_title),
+        		MemoryManagementTab.class, null);
+        getApplicationContext().getContentResolver();
     }
 
     @Override
@@ -72,30 +67,6 @@ public class Performance extends FragmentActivity {
         super.onStart();
         ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
                 .cancelAll();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.performance_menu, menu);
-        MenuItem item = menu.findItem(R.id.menu_switch);
-
-        Switch toolboxSwitch = (Switch) item.getActionView();
-        toolboxSwitch.setChecked(Settings.System.getInt(mCr,
-                Settings.System.DISABLE_TOOLBOX, 0) == 0);
-        toolboxSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                    boolean isChecked) {
-                /* TODO: Make the ViewPager disabled ( grey'd out, disabled )
-                 *  Most likely requires a custom class.
-                 */     
-                Settings.System.putInt(mCr, Settings.System.DISABLE_TOOLBOX,
-                        isChecked ? 0 : 1);
-            }
-        });
-
-        return super.onCreateOptionsMenu(menu);
     }
 
     @Override

@@ -18,35 +18,34 @@
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
-        <!-- Generic Strings, multiple uses -->
     <string name="app_name">性能</string>
-    <string name="apply">应用</string>
-    <string name="okay">确定</string>
-    <string name="cancel">取消</string>
-    <string name="reboot">重启</string>
-    <string name="later">稍后</string>
-    <string name="flash">Flash</string>
-
-        <!-- Performance >> MemoryManagement -->
-    <string name="pref_memory_management_title">内存管理</string>
-    <string name="pref_memory_management_summary">自定义内存使用以改变系统性能</string>
+    <string name="performance_settings_title">性能</string>
+    <string name="processor_title">处理器</string>
+    <string name="processor_summary">更改 CPU 调节器以及时钟速度</string>
+    <string name="cpu_cur_freq_title">当前 CPU 频率</string>
+    <string name="cpu_governors_title">CPU 调节器</string>
+    <string name="cpu_min_freq_title">最低 CPU 频率</string>
+    <string name="cpu_max_freq_title">最高 CPU 频率</string>
+    <string name="cpu_set_on_boot">启动时设置</string>
+    <string name="cpu_set_on_boot_summary">在启动时恢复当前的 CPU 设置</string>
+    <string name="io_scheds_title">I/O 调度器</string>
+    <string name="io_scheds_summary">更改 I/O 调度器</string>
+    <string name="io_sched_title">I/O 调度器</string>
+    <string name="io_sched_set_on_boot">启动时设置</string>
+    <string name="io_sched_set_on_boot_summary">在启动时恢复当前的 CPU 设置</string>
+    <string name="memory_management_title">内存管理</string>
+    <string name="memory_management_summary">自定义内存使用以改变系统性能</string>
     <string name="pref_zram_title">zRam</string>
     <string name="pref_zram_summary">压缩内存以增加虚拟容量 (需要重启)</string>
     <string name="pref_ksm_title">KSM</string>
     <string name="pref_ksm_summary">KSM 降低系统对内存的要求并提高性能</string>
-
-        <!-- Performance >> Processor -->
-    <string name="processor_title">处理器</string>
-    <string name="pref_processor_title">处理器</string>
-    <string name="pref_processor_summary">更改 CPU 调节器以及时钟速度</string>
-    <string name="pref_cpu_cur_freq_title">当前 CPU 频率</string>
-    <string name="pref_cpu_governors_title">CPU 调节器</string>
-    <string name="pref_cpu_governors_summary">%S</string>
-    <string name="pref_cpu_min_freq_title">最低 CPU 频率</string>
-    <string name="pref_cpu_min_freq_summary">%s</string>
-    <string name="pref_cpu_max_freq_title">最高 CPU 频率</string>
-    <string name="pref_cpu_max_freq_summary">%s</string>
-    <string name="pref_cpu_set_on_boot">启动时设置</string>
-    <string name="pref_cpu_set_on_boot_summary">在启动时恢复当前的 CPU 设置</string>
+    <string name="pref_purgeable_assets_title">允许内存资源的清除</string>
+    <string name="pref_purgeable_assets_summary">清除位图内存资源可以在系统需要时提供更多的内存 (需要重启)</string>
+    <string name="pref_use_dithering_title">表面改进</string>
+    <string name="dithering_no_dither">禁用图像抖动处理</string>
+    <string name="dithering_color_banding">修复色帶 (默认)</string>
+    <string name="dithering_blur_effect">修复色帶与模糊效果</string>
+    <string name="pref_use_16bpp_alpha_title">使用 16 位透明度</string>
+    <string name="pref_use_16bpp_alpha_summary">更佳的图形性能, 但会降低图像质量以及影响视觉效果 (需要重启)</string>
 
 </resources>

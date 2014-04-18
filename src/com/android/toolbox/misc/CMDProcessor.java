@@ -1,5 +1,5 @@
 
-package com.android.performance.misc;
+package com.android.toolbox.misc;
 
 import android.util.Log;
 
@@ -55,7 +55,8 @@ public class CMDProcessor {
             SHELL = SHELL_in;
         }
 
-        private String getStreamLines(final InputStream is) {
+        @SuppressWarnings("deprecation")
+		private String getStreamLines(final InputStream is) {
             String out = null;
             StringBuffer buffer = null;
             final DataInputStream dis = new DataInputStream(is);

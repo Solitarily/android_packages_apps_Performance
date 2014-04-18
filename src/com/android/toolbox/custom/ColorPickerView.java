@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.android.performance.custom;
+package com.android.toolbox.custom;
 
 import android.content.Context;
 import android.graphics.Canvas;

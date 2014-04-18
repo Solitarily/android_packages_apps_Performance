@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.android.performance.custom;
+package com.android.toolbox.custom;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

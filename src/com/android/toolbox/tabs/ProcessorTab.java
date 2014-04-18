@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.performance.tabs;
+package com.android.toolbox.tabs;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -24,11 +24,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
-import com.android.performance.fragments.PerformanceMain;
+import com.android.toolbox.fragments.ProcessorMain;
 
-public class PerformanceTab extends PreferenceFragment {
-
-    private static final String TAG = "Performance";
+public class ProcessorTab extends PreferenceFragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -42,8 +40,8 @@ public class PerformanceTab extends PreferenceFragment {
         // TODO: This is temporary until we split it up into tabs
         // Processor / Memory Management?
         FrameLayout view = new FrameLayout(getActivity().getApplicationContext());
-        view.setId(10101010);
-        PreferenceFragment frag = new PerformanceMain();
+        view.setId(10101012);
+        PreferenceFragment frag = new ProcessorMain();
         FragmentTransaction ft = getFragmentManager().beginTransaction();
         ft.add(view.getId(), frag);
         ft.commit();
