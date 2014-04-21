@@ -18,18 +18,19 @@
 
 package com.android.toolbox;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemProperties;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.ListPreference;
-import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.preference.Preference.OnPreferenceChangeListener;
 
 import com.android.toolbox.R;
 
-public class Performance extends PreferenceActivity implements  
-         Preference.OnPreferenceChangeListener {
+public class Performance extends Activity {
 	
     private static final String USE_DITHERING_PREF = "pref_use_dithering";
 
@@ -41,12 +42,18 @@ public class Performance extends PreferenceActivity implements
 
     private static final String USE_16BPP_ALPHA_PROP = "persist.sys.use_16bpp_alpha";
 
-    private ListPreference mUseDitheringPref;
+    private static ListPreference mUseDitheringPref;
 
-    private CheckBoxPreference mUse16bppAlphaPref;
+    private static CheckBoxPreference mUse16bppAlphaPref;
+    
+    protected void onCreate(Bundle savedInstanceState) {   
+        super.onCreate(savedInstanceState);  
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragement()).commit();  
+    }
+    
+    public static class PrefsFragement extends PreferenceFragment implements OnPreferenceChangeListener{
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -69,7 +76,6 @@ public class Performance extends PreferenceActivity implements
         }
     }    
 
-	@SuppressWarnings("deprecation")
 	@Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         if (preference == mUse16bppAlphaPref) {
@@ -92,5 +98,5 @@ public class Performance extends PreferenceActivity implements
         }
         return true;
     }
-
+    }
 }

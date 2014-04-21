@@ -18,20 +18,20 @@ package com.android.toolbox.fragments;
 
 import java.io.File;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemProperties;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceFragment;
 import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 
 import com.android.toolbox.R;
 import com.android.toolbox.misc.Utils;
 
-public class MemoryManagement extends PreferenceActivity implements
-        OnPreferenceChangeListener {
+public class MemoryManagement extends Activity {
 
     public static final String KSM_RUN_FILE = "/sys/kernel/mm/ksm/run";
 
@@ -53,16 +53,22 @@ public class MemoryManagement extends PreferenceActivity implements
 
     private static final String PURGEABLE_ASSETS_DEFAULT = "0";
 
-    private ListPreference mzRAM;
+    private static ListPreference mzRAM;
 
-    private CheckBoxPreference mPurgeableAssetsPref;
+    private static CheckBoxPreference mPurgeableAssetsPref;
 
-    private CheckBoxPreference mKSMPref;
+    private static CheckBoxPreference mKSMPref;
 
-    private int swapAvailable = -1;
+    private static int swapAvailable = -1;
+    
+    protected void onCreate(Bundle savedInstanceState) {   
+        super.onCreate(savedInstanceState);  
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragement()).commit();  
+    }
+    
+    public static class PrefsFragement extends PreferenceFragment implements OnPreferenceChangeListener{
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -135,4 +141,5 @@ public class MemoryManagement extends PreferenceActivity implements
         }
         return swapAvailable > 0;
     }
+}
 }

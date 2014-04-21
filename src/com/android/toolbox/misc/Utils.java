@@ -86,5 +86,4 @@ public class Utils {
         command = "busybox mount -o remount," + mount + " /system";
         return (cmd.su.runWaitFor(command).success());
     }
-
 }

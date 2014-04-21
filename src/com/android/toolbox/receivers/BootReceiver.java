@@ -27,6 +27,7 @@ import android.util.Log;
 import com.android.toolbox.R;
 import com.android.toolbox.misc.Utils;
 import com.android.toolbox.fragments.*;
+import com.android.toolbox.misc.CMDProcessor;
 
 import java.util.Arrays;
 import java.util.List;
@@ -78,6 +79,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     private void configureCPU(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
+        for (int i = 0; i < Processor.getNumOfCpus(); i++) {
 
         if (prefs.getBoolean(Processor.SOB_PREF, false) == false) {
             Log.i(TAG, "Restore disabled by user preference.");
@@ -105,16 +107,20 @@ public class BootReceiver extends BroadcastReceiver {
                 frequencies = Arrays.asList(availableFrequenciesLine.split(" "));
             }
             if (maxFrequency != null && frequencies != null && frequencies.contains(maxFrequency)) {
-                Utils.fileWriteOneLine(Processor.FREQ_MAX_FILE, maxFrequency);
+                new CMDProcessor().su.runWaitFor("busybox echo " + maxFrequency
+                        + " > " + Processor.FREQ_MAX_FILE.replace("cpu0", "cpu" + i));
             }
             if (minFrequency != null && frequencies != null && frequencies.contains(minFrequency)) {
-                Utils.fileWriteOneLine(Processor.FREQ_MIN_FILE, minFrequency);
+                new CMDProcessor().su.runWaitFor("busybox echo " + minFrequency
+                        + " > " + Processor.FREQ_MIN_FILE.replace("cpu0", "cpu" + i));
             }
             if (governor != null && governors != null && governors.contains(governor)) {
-                Utils.fileWriteOneLine(Processor.GOV_FILE, governor);
+                new CMDProcessor().su.runWaitFor("busybox echo " + governor
+                        + " > " + Processor.GOV_FILE.replace("cpu0", "cpu" + i));
             }
             Log.d(TAG, "CPU settings restored.");
         }
+    }
     }
 
     private void configureIOSched(Context ctx) {
@@ -137,7 +143,8 @@ public class BootReceiver extends BroadcastReceiver {
                 ioschedulers = Arrays.asList(availableIOSchedulersLine.replace("[", "").replace("]", "").split(" "));
             }
             if (ioscheduler != null && ioschedulers != null && ioschedulers.contains(ioscheduler)) {
-                Utils.fileWriteOneLine(IOScheduler.IOSCHED_LIST_FILE, ioscheduler);
+                new CMDProcessor().su.runWaitFor("busybox echo " + ioscheduler
+                        + " > " + IOScheduler.IOSCHED_LIST_FILE);
             }
             Log.d(TAG, "I/O scheduler settings restored.");
         }

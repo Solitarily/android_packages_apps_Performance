@@ -3,9 +3,10 @@ package com.android.toolbox.misc;
 
 import android.util.Log;
 
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class CMDProcessor {
 
@@ -55,20 +56,19 @@ public class CMDProcessor {
             SHELL = SHELL_in;
         }
 
-        @SuppressWarnings("deprecation")
-		private String getStreamLines(final InputStream is) {
+        private String getStreamLines(final InputStream is) {
             String out = null;
             StringBuffer buffer = null;
-            final DataInputStream dis = new DataInputStream(is);
+            final BufferedReader br = new BufferedReader(new InputStreamReader(is));
 
             try {
-                if (dis.available() > 0) {
-                    buffer = new StringBuffer(dis.readLine());
-                    while (dis.available() > 0) {
-                        buffer.append("\n").append(dis.readLine());
+                if (br.readLine() != null) {
+                    buffer = new StringBuffer(br.readLine());
+                    while (br.readLine() != null) {
+                        buffer.append("\n").append(br.readLine());
                     }
                 }
-                dis.close();
+                is.close();
             } catch (final Exception ex) {
                 Log.e(TAG, ex.getMessage());
             }

@@ -16,32 +16,40 @@
 
 package com.android.toolbox.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 
 import com.android.toolbox.R;
 import com.android.toolbox.misc.Utils;
+import com.android.toolbox.misc.CMDProcessor;
 
 //
 // I/O Scheduler Related Settings
 //
-public class IOScheduler extends PreferenceActivity implements
-        Preference.OnPreferenceChangeListener {
+public class IOScheduler extends Activity  {
 
     public static final String IOSCHED_PREF = "pref_io_sched";
     public static final String IOSCHED_LIST_FILE = "/sys/block/mmcblk0/queue/scheduler";
 
     public static final String SOB_PREF = "pref_io_sched_set_on_boot";
 
-    private String mIOSchedulerFormat;
+    private static String mIOSchedulerFormat;
 
-    private ListPreference mIOSchedulerPref;
+    private static ListPreference mIOSchedulerPref;
+    
+    protected void onCreate(Bundle savedInstanceState) {   
+        super.onCreate(savedInstanceState);  
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragement()).commit();  
+    }
+    
+    public static class PrefsFragement extends PreferenceFragment implements OnPreferenceChangeListener{ 
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -106,8 +114,8 @@ public class IOScheduler extends PreferenceActivity implements
             if (preference == mIOSchedulerPref) {
                 fname = IOSCHED_LIST_FILE;
             }
-
-            if (Utils.fileWriteOneLine(fname, (String) newValue)) {
+            new CMDProcessor().su.runWaitFor("busybox echo " + newValue + " > "
+                    + fname);
                 if (preference == mIOSchedulerPref) {
                     mIOSchedulerPref.setSummary(String.format(mIOSchedulerFormat, (String) newValue));
                 }
@@ -115,7 +123,7 @@ public class IOScheduler extends PreferenceActivity implements
             } else {
                 return false;
             }
-        }
-        return false;
+
     }
+}
 }

@@ -17,27 +17,29 @@
 package com.android.toolbox.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
+import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.preference.Preference.OnPreferenceChangeListener;
 
 import com.android.toolbox.R;
+import com.android.toolbox.misc.CMDProcessor;
 import com.android.toolbox.misc.Utils;
 
 //
 // CPU Related Settings
 //
-@SuppressLint("HandlerLeak")
-public class Processor extends PreferenceActivity implements
-        Preference.OnPreferenceChangeListener {
+public class Processor extends Activity {
 
     public static final String FREQ_CUR_PREF = "pref_cpu_freq_cur";
     public static final String SCALE_CUR_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq";
     public static final String FREQINFO_CUR_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq";
+	private static final String NUM_OF_CPUS_PATH = "/sys/devices/system/cpu/present";
     private static String FREQ_CUR_FILE = SCALE_CUR_FILE;
     public static final String GOV_PREF = "pref_cpu_gov";
     public static final String GOV_LIST_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors";
@@ -51,14 +53,22 @@ public class Processor extends PreferenceActivity implements
 
     public static boolean freqCapFilesInitialized = false;
 
-    private String mGovernorFormat;
-    private String mMinFrequencyFormat;
-    private String mMaxFrequencyFormat;
+    private static String mGovernorFormat;
+    private static String mMinFrequencyFormat;
+    private static String mMaxFrequencyFormat;
 
-    private Preference mCurFrequencyPref;
-    private ListPreference mGovernorPref;
-    private ListPreference mMinFrequencyPref;
-    private ListPreference mMaxFrequencyPref;
+    private static Preference mCurFrequencyPref;
+    private static ListPreference mGovernorPref;
+    private static ListPreference mMinFrequencyPref;
+    private static ListPreference mMaxFrequencyPref;
+    
+    protected void onCreate(Bundle savedInstanceState) {   
+        super.onCreate(savedInstanceState);  
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragement()).commit();  
+    }
+    
+    @SuppressLint("HandlerLeak")
+	public static class PrefsFragement extends PreferenceFragment implements OnPreferenceChangeListener{
 
     private class CurCPUThread extends Thread {
         private boolean mInterrupt = false;
@@ -83,7 +93,6 @@ public class Processor extends PreferenceActivity implements
 
     private CurCPUThread mCurCPUThread = new CurCPUThread();
 
-    @SuppressLint("HandlerLeak")
 	private Handler mCurCPUHandler = new Handler() {
         public void handleMessage(Message msg) {
             mCurFrequencyPref.setSummary(toMHz((String) msg.obj));
@@ -98,8 +107,7 @@ public class Processor extends PreferenceActivity implements
         freqCapFilesInitialized = true;
     }
 
-    @SuppressWarnings("deprecation")
-	@Override
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -225,22 +233,25 @@ public class Processor extends PreferenceActivity implements
         } catch (InterruptedException e) {
         }
     }
-
+    
     public boolean onPreferenceChange(Preference preference, Object newValue) {
+    	for (int i = 0; i < getNumOfCpus(); i++) {
         initFreqCapFiles();
-
+        
         String fname = "";
 
         if (newValue != null) {
+
             if (preference == mGovernorPref) {
-                fname = GOV_FILE;
+                fname = GOV_FILE.replace("cpu0", "cpu" + i);
             } else if (preference == mMinFrequencyPref) {
-                fname = FREQ_MIN_FILE;
+                fname = FREQ_MIN_FILE.replace("cpu0", "cpu" + i);
             } else if (preference == mMaxFrequencyPref) {
-                fname = FREQ_MAX_FILE;
+                fname = FREQ_MAX_FILE.replace("cpu0", "cpu" + i);
             }
 
-            if (Utils.fileWriteOneLine(fname, (String) newValue)) {
+            new CMDProcessor().su.runWaitFor("busybox echo " + newValue + " > "
+                    + fname); {
                 if (preference == mGovernorPref) {
                     mGovernorPref.setSummary(String.format(mGovernorFormat, (String) newValue));
                 } else if (preference == mMinFrequencyPref) {
@@ -251,15 +262,37 @@ public class Processor extends PreferenceActivity implements
                             toMHz((String) newValue)));
                 }
                 return true;
-            } else {
-                return false;
+            }  
+
             }
         }
         return false;
     }
 
-    private String toMHz(String mhzString) {
+    private static String toMHz(String mhzString) {
         return new StringBuilder().append(Integer.valueOf(mhzString) / 1000).append(" MHz")
                 .toString();
     }
+    }
+
+    public static int getNumOfCpus() {
+        int numOfCpu = 1;
+        String numOfCpus = Utils.fileReadOneLine(NUM_OF_CPUS_PATH);
+        String[] cpuCount = numOfCpus.split("-");
+        if (cpuCount.length > 1) {
+            try {
+                int cpuStart = Integer.parseInt(cpuCount[0]);
+                int cpuEnd = Integer.parseInt(cpuCount[1]);
+
+                numOfCpu = cpuEnd - cpuStart + 1;
+
+                if (numOfCpu < 0)
+                    numOfCpu = 1;
+            } catch (NumberFormatException ex) {
+                numOfCpu = 1;
+            }
+        }
+        return numOfCpu;
+    }
+    
 }
