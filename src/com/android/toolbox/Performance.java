@@ -1,153 +1,96 @@
 /*
- * Copyright (C) 2013 The Evervolv Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Performance Control - An Android CPU Control application Copyright (C) 2012
+ * James Roberts
+ * 
+ * This program is free software: you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.android.toolbox;
 
-import android.app.ActionBar;
-import android.app.ActionBar.Tab;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
-import android.app.NotificationManager;
-import android.content.Context;
 import android.os.Bundle;
-import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.ViewPager;
-import android.view.MenuItem;
+import android.os.SystemProperties;
+import android.preference.CheckBoxPreference;
+import android.preference.Preference;
+import android.preference.ListPreference;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceScreen;
+
 import com.android.toolbox.R;
-import com.android.toolbox.tabs.IOSchedulerTab;
-import com.android.toolbox.tabs.MemoryManagementTab;
-import com.android.toolbox.tabs.ProcessorTab;
 
-import java.util.ArrayList;
+public class Performance extends PreferenceActivity implements  
+         Preference.OnPreferenceChangeListener {
+	
+    private static final String USE_DITHERING_PREF = "pref_use_dithering";
 
-public class Performance extends FragmentActivity {
+    private static final String USE_DITHERING_PERSIST_PROP = "persist.sys.use_dithering";
 
-    private ViewPager mViewPager;
-    private TabsAdapter mTabsAdapter;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    private static final String USE_DITHERING_DEFAULT = "1";
+
+    private static final String USE_16BPP_ALPHA_PREF = "pref_use_16bpp_alpha";
+
+    private static final String USE_16BPP_ALPHA_PROP = "persist.sys.use_16bpp_alpha";
+
+    private ListPreference mUseDitheringPref;
+
+    private CheckBoxPreference mUse16bppAlphaPref;
+
+    @SuppressWarnings("deprecation")
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.toolbox);
 
-        mViewPager = (ViewPager) findViewById(R.id.view_pager);
+        if (getPreferenceManager() != null) {
 
-        final ActionBar bar = getActionBar();
-        bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-        bar.setDisplayOptions(ActionBar.DISPLAY_SHOW_TITLE, ActionBar.DISPLAY_SHOW_TITLE);
-        bar.setTitle(R.string.app_name);
-        bar.setDisplayHomeAsUpEnabled(true);
+            addPreferencesFromResource(R.xml.performance_settings);
 
-        mTabsAdapter = new TabsAdapter(this, mViewPager);
-        mTabsAdapter.addTab(bar.newTab().setText(R.string.io_scheds_title),
-        		IOSchedulerTab.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText(R.string.processor_title),
-        		ProcessorTab.class, null);
-        mTabsAdapter.addTab(bar.newTab().setText(R.string.memory_management_title),
-        		MemoryManagementTab.class, null);
-        getApplicationContext().getContentResolver();
+            PreferenceScreen prefSet = getPreferenceScreen();
+
+            String useDithering = SystemProperties.get(USE_DITHERING_PERSIST_PROP, USE_DITHERING_DEFAULT);
+            mUseDitheringPref = (ListPreference) prefSet.findPreference(USE_DITHERING_PREF);
+            mUseDitheringPref.setOnPreferenceChangeListener(this);
+            mUseDitheringPref.setValue(useDithering);
+            mUseDitheringPref.setSummary(mUseDitheringPref.getEntry());
+
+            mUse16bppAlphaPref = (CheckBoxPreference) prefSet.findPreference(USE_16BPP_ALPHA_PREF);
+            String use16bppAlpha = SystemProperties.get(USE_16BPP_ALPHA_PROP, "0");
+            mUse16bppAlphaPref.setChecked("1".equals(use16bppAlpha));
+
+        }
+    }    
+
+	@SuppressWarnings("deprecation")
+	@Override
+    public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
+        if (preference == mUse16bppAlphaPref) {
+            SystemProperties.set(USE_16BPP_ALPHA_PROP,
+                    mUse16bppAlphaPref.isChecked() ? "1" : "0");
+        } else {
+            // If we didn't handle it, let preferences handle it.
+            return super.onPreferenceTreeClick(preferenceScreen, preference);
+        }
+
+        return true;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE))
-                .cancelAll();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case android.R.id.home:
-            onBackPressed();
-            return true;
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
+        if (preference == mUseDitheringPref) {
+            String newVal = (String) newValue;
+            int index = mUseDitheringPref.findIndexOfValue(newVal);
+            SystemProperties.set(USE_DITHERING_PERSIST_PROP, newVal);
+            mUseDitheringPref.setSummary(mUseDitheringPref.getEntries()[index]);
         }
-        return super.onOptionsItemSelected(item);
-    }
-
-    static class TabsAdapter extends FragmentPagerAdapter
-            implements ActionBar.TabListener, ViewPager.OnPageChangeListener {
-        private final Context mContext;
-        private final ActionBar mActionBar;
-        private final ViewPager mViewPager;
-        private final ArrayList<TabInfo> mTabs = new ArrayList<TabInfo>();
-
-        static final class TabInfo {
-            private final Class<?> clss;
-            private final Bundle args;
-
-            TabInfo(Class<?> _class, Bundle _args) {
-                clss = _class;
-                args = _args;
-            }
-        }
-
-        public TabsAdapter(Activity activity, ViewPager pager) {
-            super(activity.getFragmentManager());
-            mContext = activity;
-            mActionBar = activity.getActionBar();
-            mViewPager = pager;
-            mViewPager.setAdapter(this);
-            mViewPager.setOnPageChangeListener(this);
-        }
-
-        public void addTab(ActionBar.Tab tab, Class<?> clss, Bundle args) {
-            TabInfo info = new TabInfo(clss, args);
-            tab.setTag(info);
-            tab.setTabListener(this);
-            mTabs.add(info);
-            mActionBar.addTab(tab);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public int getCount() {
-            return mTabs.size();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            TabInfo info = mTabs.get(position);
-            return Fragment.instantiate(mContext, info.clss.getName(), info.args);
-        }
-
-        @Override
-		public void onPageSelected(int position) {
-            mActionBar.setSelectedNavigationItem(position);
-        }
-
-        @Override
-		public void onTabSelected(Tab tab, FragmentTransaction ft) {
-            Object tag = tab.getTag();
-            for (int i=0; i<mTabs.size(); i++) {
-                if (mTabs.get(i) == tag) {
-                    mViewPager.setCurrentItem(i);
-                }
-            }
-        }
-
-        @Override
-		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
-        @Override
-		public void onPageScrollStateChanged(int state) { }
-        @Override
-		public void onTabUnselected(Tab tab, FragmentTransaction ft) { }
-        @Override
-		public void onTabReselected(Tab tab, FragmentTransaction ft) { }
+        return true;
     }
 
 }

@@ -9,7 +9,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class FileUtil {
+public class Utils {
 
     private static final String TAG = "Performance";
 

@@ -19,16 +19,17 @@ package com.android.toolbox.fragments;
 import android.os.Bundle;
 import android.preference.ListPreference;
 import android.preference.Preference;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
-import android.preference.PreferenceFragment;
 
 import com.android.toolbox.R;
-import com.android.toolbox.misc.FileUtil;
+import com.android.toolbox.misc.Utils;
 
 //
 // I/O Scheduler Related Settings
 //
-public class IOSchedulerMain extends PreferenceFragment implements Preference.OnPreferenceChangeListener  {
+public class IOScheduler extends PreferenceActivity implements
+        Preference.OnPreferenceChangeListener {
 
     public static final String IOSCHED_PREF = "pref_io_sched";
     public static final String IOSCHED_LIST_FILE = "/sys/block/mmcblk0/queue/scheduler";
@@ -39,7 +40,8 @@ public class IOSchedulerMain extends PreferenceFragment implements Preference.On
 
     private ListPreference mIOSchedulerPref;
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -58,8 +60,8 @@ public class IOSchedulerMain extends PreferenceFragment implements Preference.On
 
         /* I/O scheduler
         Some systems might not use I/O schedulers */
-        if (!FileUtil.fileExists(IOSCHED_LIST_FILE) ||
-            (availableIOSchedulersLine = FileUtil.fileReadOneLine(IOSCHED_LIST_FILE)) == null) {
+        if (!Utils.fileExists(IOSCHED_LIST_FILE) ||
+            (availableIOSchedulersLine = Utils.fileReadOneLine(IOSCHED_LIST_FILE)) == null) {
             prefScreen.removePreference(mIOSchedulerPref);
 
         } else {
@@ -86,8 +88,8 @@ public class IOSchedulerMain extends PreferenceFragment implements Preference.On
 
         super.onResume();
 
-        if (FileUtil.fileExists(IOSCHED_LIST_FILE) &&
-            (availableIOSchedulersLine = FileUtil.fileReadOneLine(IOSCHED_LIST_FILE)) != null) {
+        if (Utils.fileExists(IOSCHED_LIST_FILE) &&
+            (availableIOSchedulersLine = Utils.fileReadOneLine(IOSCHED_LIST_FILE)) != null) {
             bropen = availableIOSchedulersLine.indexOf("[");
             brclose = availableIOSchedulersLine.lastIndexOf("]");
             if (bropen >= 0 && brclose >= 0) {
@@ -97,8 +99,7 @@ public class IOSchedulerMain extends PreferenceFragment implements Preference.On
         }
     }
 
-    @Override
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
         String fname = "";
 
         if (newValue != null) {
@@ -106,7 +107,7 @@ public class IOSchedulerMain extends PreferenceFragment implements Preference.On
                 fname = IOSCHED_LIST_FILE;
             }
 
-            if (FileUtil.fileWriteOneLine(fname, (String) newValue)) {
+            if (Utils.fileWriteOneLine(fname, (String) newValue)) {
                 if (preference == mIOSchedulerPref) {
                     mIOSchedulerPref.setSummary(String.format(mIOSchedulerFormat, (String) newValue));
                 }

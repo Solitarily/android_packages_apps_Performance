@@ -17,7 +17,7 @@
  -->
 
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-
+    <string name="help_label">帮助</string>
     <string name="app_name">性能</string>
     <string name="performance_settings_title">性能</string>
     <string name="processor_title">处理器</string>

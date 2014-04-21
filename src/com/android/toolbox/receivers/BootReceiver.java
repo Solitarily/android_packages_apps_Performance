@@ -25,11 +25,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.android.toolbox.R;
-import com.android.toolbox.misc.FileUtil;
-
-import com.android.toolbox.fragments.IOSchedulerMain;
-import com.android.toolbox.fragments.MemoryManagementMain;
-import com.android.toolbox.fragments.ProcessorMain;
+import com.android.toolbox.misc.Utils;
+import com.android.toolbox.fragments.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +57,7 @@ public class BootReceiver extends BroadcastReceiver {
             SystemProperties.set(IOSCHED_SETTINGS_PROP, "false");
         }
 
-        if (FileUtil.fileExists(MemoryManagementMain.KSM_RUN_FILE)) {
+        if (Utils.fileExists(MemoryManagement.KSM_RUN_FILE)) {
             if (SystemProperties.getBoolean(KSM_SETTINGS_PROP, false) == false
                     && intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
                 SystemProperties.set(KSM_SETTINGS_PROP, "true");
@@ -73,25 +70,25 @@ public class BootReceiver extends BroadcastReceiver {
 
     private void initFreqCapFiles(Context ctx)
     {
-        if (ProcessorMain.freqCapFilesInitialized) return;
-        ProcessorMain.FREQ_MAX_FILE = ctx.getResources().getString(R.string.max_cpu_freq_file);
-        ProcessorMain.FREQ_MIN_FILE = ctx.getResources().getString(R.string.min_cpu_freq_file);
-        ProcessorMain.freqCapFilesInitialized = true;
+        if (Processor.freqCapFilesInitialized) return;
+        Processor.FREQ_MAX_FILE = ctx.getResources().getString(R.string.max_cpu_freq_file);
+        Processor.FREQ_MIN_FILE = ctx.getResources().getString(R.string.min_cpu_freq_file);
+        Processor.freqCapFilesInitialized = true;
     }
 
     private void configureCPU(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        if (prefs.getBoolean(ProcessorMain.SOB_PREF, false) == false) {
+        if (prefs.getBoolean(Processor.SOB_PREF, false) == false) {
             Log.i(TAG, "Restore disabled by user preference.");
             return;
         }
 
-        String governor = prefs.getString(ProcessorMain.GOV_PREF, null);
-        String minFrequency = prefs.getString(ProcessorMain.FREQ_MIN_PREF, null);
-        String maxFrequency = prefs.getString(ProcessorMain.FREQ_MAX_PREF, null);
-        String availableFrequenciesLine = FileUtil.fileReadOneLine(ProcessorMain.FREQ_LIST_FILE);
-        String availableGovernorsLine = FileUtil.fileReadOneLine(ProcessorMain.GOV_LIST_FILE);
+        String governor = prefs.getString(Processor.GOV_PREF, null);
+        String minFrequency = prefs.getString(Processor.FREQ_MIN_PREF, null);
+        String maxFrequency = prefs.getString(Processor.FREQ_MAX_PREF, null);
+        String availableFrequenciesLine = Utils.fileReadOneLine(Processor.FREQ_LIST_FILE);
+        String availableGovernorsLine = Utils.fileReadOneLine(Processor.GOV_LIST_FILE);
         boolean noSettings = ((availableGovernorsLine == null) || (governor == null)) &&
                              ((availableFrequenciesLine == null) || ((minFrequency == null) && (maxFrequency == null)));
         List<String> frequencies = null;
@@ -108,13 +105,13 @@ public class BootReceiver extends BroadcastReceiver {
                 frequencies = Arrays.asList(availableFrequenciesLine.split(" "));
             }
             if (maxFrequency != null && frequencies != null && frequencies.contains(maxFrequency)) {
-            	FileUtil.fileWriteOneLine(ProcessorMain.FREQ_MAX_FILE, maxFrequency);
+                Utils.fileWriteOneLine(Processor.FREQ_MAX_FILE, maxFrequency);
             }
             if (minFrequency != null && frequencies != null && frequencies.contains(minFrequency)) {
-            	FileUtil.fileWriteOneLine(ProcessorMain.FREQ_MIN_FILE, minFrequency);
+                Utils.fileWriteOneLine(Processor.FREQ_MIN_FILE, minFrequency);
             }
             if (governor != null && governors != null && governors.contains(governor)) {
-            	FileUtil.fileWriteOneLine(ProcessorMain.GOV_FILE, governor);
+                Utils.fileWriteOneLine(Processor.GOV_FILE, governor);
             }
             Log.d(TAG, "CPU settings restored.");
         }
@@ -123,13 +120,13 @@ public class BootReceiver extends BroadcastReceiver {
     private void configureIOSched(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        if (prefs.getBoolean(IOSchedulerMain.SOB_PREF, false) == false) {
+        if (prefs.getBoolean(IOScheduler.SOB_PREF, false) == false) {
             Log.i(TAG, "Restore disabled by user preference.");
             return;
         }
 
-        String ioscheduler = prefs.getString(IOSchedulerMain.IOSCHED_PREF, null);
-        String availableIOSchedulersLine = FileUtil.fileReadOneLine(IOSchedulerMain.IOSCHED_LIST_FILE);
+        String ioscheduler = prefs.getString(IOScheduler.IOSCHED_PREF, null);
+        String availableIOSchedulersLine = Utils.fileReadOneLine(IOScheduler.IOSCHED_LIST_FILE);
         boolean noSettings = ((availableIOSchedulersLine == null) || (ioscheduler == null));
         List<String> ioschedulers = null;
 
@@ -140,7 +137,7 @@ public class BootReceiver extends BroadcastReceiver {
                 ioschedulers = Arrays.asList(availableIOSchedulersLine.replace("[", "").replace("]", "").split(" "));
             }
             if (ioscheduler != null && ioschedulers != null && ioschedulers.contains(ioscheduler)) {
-            	FileUtil.fileWriteOneLine(IOSchedulerMain.IOSCHED_LIST_FILE, ioscheduler);
+                Utils.fileWriteOneLine(IOScheduler.IOSCHED_LIST_FILE, ioscheduler);
             }
             Log.d(TAG, "I/O scheduler settings restored.");
         }
@@ -149,9 +146,9 @@ public class BootReceiver extends BroadcastReceiver {
     private void configureKSM(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
 
-        boolean ksm = prefs.getBoolean(MemoryManagementMain.KSM_PREF, false);
+        boolean ksm = prefs.getBoolean(MemoryManagement.KSM_PREF, false);
 
-        FileUtil.fileWriteOneLine(MemoryManagementMain.KSM_RUN_FILE, ksm ? "1" : "0");
+        Utils.fileWriteOneLine(MemoryManagement.KSM_RUN_FILE, ksm ? "1" : "0");
         Log.d(TAG, "KSM settings restored.");
     }
 }

@@ -17,25 +17,37 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:title="@string/performance_settings_title"
-    xmlns:settings="http://schemas.android.com/apk/res/com.android.settings">
+    xmlns:settings="http://schemas.android.com/apk/res/com.android.toolbox">
 
     <PreferenceScreen
         android:key="processor"
-        android:fragment="com.android.settings.cyanogenmod.Processor"
         android:title="@string/processor_title"
-        android:summary="@string/processor_summary" />
+        android:summary="@string/processor_summary" >
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.android.toolbox"
+            android:targetClass="com.android.toolbox.fragments.Processor" />
+</PreferenceScreen>
 
     <PreferenceScreen
         android:key="ioscheduler"
-        android:fragment="com.android.settings.cyanogenmod.IOScheduler"
         android:title="@string/io_scheds_title"
-        android:summary="@string/io_scheds_summary" />
+        android:summary="@string/io_scheds_summary" >
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.android.toolbox"
+            android:targetClass="com.android.toolbox.fragments.IOScheduler" />
+</PreferenceScreen>
 
     <PreferenceScreen
         android:key="memory_management"
-        android:fragment="com.android.settings.cyanogenmod.MemoryManagement"
         android:title="@string/memory_management_title"
-        android:summary="@string/memory_management_summary" />
+        android:summary="@string/memory_management_summary" >
+        <intent
+            android:action="android.intent.action.MAIN"
+            android:targetPackage="com.android.toolbox"
+            android:targetClass="com.android.toolbox.fragments.MemoryManagement" />
+</PreferenceScreen>
 
     <CheckBoxPreference
         android:key="pref_use_16bpp_alpha"

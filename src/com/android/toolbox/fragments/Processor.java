@@ -22,17 +22,18 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 
 import com.android.toolbox.R;
-import com.android.toolbox.misc.FileUtil;
+import com.android.toolbox.misc.Utils;
 
 //
 // CPU Related Settings
 //
 @SuppressLint("HandlerLeak")
-public class ProcessorMain extends PreferenceFragment implements Preference.OnPreferenceChangeListener  {
+public class Processor extends PreferenceActivity implements
+        Preference.OnPreferenceChangeListener {
 
     public static final String FREQ_CUR_PREF = "pref_cpu_freq_cur";
     public static final String SCALE_CUR_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq";
@@ -62,8 +63,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
     private class CurCPUThread extends Thread {
         private boolean mInterrupt = false;
 
-        @Override
-		public void interrupt() {
+        public void interrupt() {
             mInterrupt = true;
         }
 
@@ -72,7 +72,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
             try {
                 while (!mInterrupt) {
                     sleep(500);
-                    final String curFreq = FileUtil.fileReadOneLine(FREQ_CUR_FILE);
+                    final String curFreq = Utils.fileReadOneLine(FREQ_CUR_FILE);
                     if (curFreq != null)
                         mCurCPUHandler.sendMessage(mCurCPUHandler.obtainMessage(0, curFreq));
                 }
@@ -85,8 +85,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
 
     @SuppressLint("HandlerLeak")
 	private Handler mCurCPUHandler = new Handler() {
-        @Override
-		public void handleMessage(Message msg) {
+        public void handleMessage(Message msg) {
             mCurFrequencyPref.setSummary(toMHz((String) msg.obj));
         }
     };
@@ -99,7 +98,8 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
         freqCapFilesInitialized = true;
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -121,13 +121,13 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
         PreferenceScreen prefScreen = getPreferenceScreen();
 
         mGovernorPref = (ListPreference) prefScreen.findPreference(GOV_PREF);
-        mCurFrequencyPref = prefScreen.findPreference(FREQ_CUR_PREF);
+        mCurFrequencyPref = (Preference) prefScreen.findPreference(FREQ_CUR_PREF);
         mMinFrequencyPref = (ListPreference) prefScreen.findPreference(FREQ_MIN_PREF);
         mMaxFrequencyPref = (ListPreference) prefScreen.findPreference(FREQ_MAX_PREF);
 
         /* Governor
         Some systems might not use governors */
-        if (!FileUtil.fileExists(GOV_LIST_FILE) || !FileUtil.fileExists(GOV_FILE) || (temp = FileUtil.fileReadOneLine(GOV_FILE)) == null || (availableGovernorsLine = FileUtil.fileReadOneLine(GOV_LIST_FILE)) == null) {
+        if (!Utils.fileExists(GOV_LIST_FILE) || !Utils.fileExists(GOV_FILE) || (temp = Utils.fileReadOneLine(GOV_FILE)) == null || (availableGovernorsLine = Utils.fileReadOneLine(GOV_LIST_FILE)) == null) {
             prefScreen.removePreference(mGovernorPref);
 
         } else {
@@ -141,7 +141,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
         }
 
         // Disable the min/max list if we dont have a list file
-        if (!FileUtil.fileExists(FREQ_LIST_FILE) || (availableFrequenciesLine = FileUtil.fileReadOneLine(FREQ_LIST_FILE)) == null) {
+        if (!Utils.fileExists(FREQ_LIST_FILE) || (availableFrequenciesLine = Utils.fileReadOneLine(FREQ_LIST_FILE)) == null) {
             mMinFrequencyPref.setEnabled(false);
             mMaxFrequencyPref.setEnabled(false);
 
@@ -154,7 +154,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
             }
 
             // Min frequency
-            if (!FileUtil.fileExists(FREQ_MIN_FILE) || (temp = FileUtil.fileReadOneLine(FREQ_MIN_FILE)) == null) {
+            if (!Utils.fileExists(FREQ_MIN_FILE) || (temp = Utils.fileReadOneLine(FREQ_MIN_FILE)) == null) {
                 mMinFrequencyPref.setEnabled(false);
 
             } else {
@@ -166,7 +166,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
             }
 
             // Max frequency
-            if (!FileUtil.fileExists(FREQ_MAX_FILE) || (temp = FileUtil.fileReadOneLine(FREQ_MAX_FILE)) == null) {
+            if (!Utils.fileExists(FREQ_MAX_FILE) || (temp = Utils.fileReadOneLine(FREQ_MAX_FILE)) == null) {
                 mMaxFrequencyPref.setEnabled(false);
 
             } else {
@@ -179,11 +179,11 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
         }
 
         // Cur frequency
-        if (!FileUtil.fileExists(FREQ_CUR_FILE)) {
+        if (!Utils.fileExists(FREQ_CUR_FILE)) {
             FREQ_CUR_FILE = FREQINFO_CUR_FILE;
         }
 
-        if (!FileUtil.fileExists(FREQ_CUR_FILE) || (temp = FileUtil.fileReadOneLine(FREQ_CUR_FILE)) == null) {
+        if (!Utils.fileExists(FREQ_CUR_FILE) || (temp = Utils.fileReadOneLine(FREQ_CUR_FILE)) == null) {
             mCurFrequencyPref.setEnabled(false);
 
         } else {
@@ -201,17 +201,17 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
 
         initFreqCapFiles();
 
-        if (FileUtil.fileExists(FREQ_MIN_FILE) && (temp = FileUtil.fileReadOneLine(FREQ_MIN_FILE)) != null) {
+        if (Utils.fileExists(FREQ_MIN_FILE) && (temp = Utils.fileReadOneLine(FREQ_MIN_FILE)) != null) {
             mMinFrequencyPref.setValue(temp);
             mMinFrequencyPref.setSummary(String.format(mMinFrequencyFormat, toMHz(temp)));
         }
 
-        if (FileUtil.fileExists(FREQ_MAX_FILE) && (temp = FileUtil.fileReadOneLine(FREQ_MAX_FILE)) != null) {
+        if (Utils.fileExists(FREQ_MAX_FILE) && (temp = Utils.fileReadOneLine(FREQ_MAX_FILE)) != null) {
             mMaxFrequencyPref.setValue(temp);
             mMaxFrequencyPref.setSummary(String.format(mMaxFrequencyFormat, toMHz(temp)));
         }
 
-        if (FileUtil.fileExists(GOV_FILE) && (temp = FileUtil.fileReadOneLine(GOV_FILE)) != null) {
+        if (Utils.fileExists(GOV_FILE) && (temp = Utils.fileReadOneLine(GOV_FILE)) != null) {
             mGovernorPref.setSummary(String.format(mGovernorFormat, temp));
         }
     }
@@ -226,8 +226,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
         }
     }
 
-    @Override
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
         initFreqCapFiles();
 
         String fname = "";
@@ -241,7 +240,7 @@ public class ProcessorMain extends PreferenceFragment implements Preference.OnPr
                 fname = FREQ_MAX_FILE;
             }
 
-            if (FileUtil.fileWriteOneLine(fname, (String) newValue)) {
+            if (Utils.fileWriteOneLine(fname, (String) newValue)) {
                 if (preference == mGovernorPref) {
                     mGovernorPref.setSummary(String.format(mGovernorFormat, (String) newValue));
                 } else if (preference == mMinFrequencyPref) {

@@ -23,13 +23,15 @@ import android.os.SystemProperties;
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
-import android.preference.PreferenceFragment;
+import android.preference.Preference.OnPreferenceChangeListener;
+import android.preference.PreferenceActivity;
 import android.preference.PreferenceScreen;
 
 import com.android.toolbox.R;
-import com.android.toolbox.misc.FileUtil;
+import com.android.toolbox.misc.Utils;
 
-public class MemoryManagementMain extends PreferenceFragment implements Preference.OnPreferenceChangeListener  {
+public class MemoryManagement extends PreferenceActivity implements
+        OnPreferenceChangeListener {
 
     public static final String KSM_RUN_FILE = "/sys/kernel/mm/ksm/run";
 
@@ -59,7 +61,8 @@ public class MemoryManagementMain extends PreferenceFragment implements Preferen
 
     private int swapAvailable = -1;
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -82,8 +85,8 @@ public class MemoryManagementMain extends PreferenceFragment implements Preferen
                 prefSet.removePreference(mzRAM);
             }
 
-            if (FileUtil.fileExists(KSM_RUN_FILE)) {
-                mKSMPref.setChecked(KSM_PREF_ENABLED.equals(FileUtil.fileReadOneLine(KSM_RUN_FILE)));
+            if (Utils.fileExists(KSM_RUN_FILE)) {
+                mKSMPref.setChecked(KSM_PREF_ENABLED.equals(Utils.fileReadOneLine(KSM_RUN_FILE)));
             } else {
                 prefSet.removePreference(mKSMPref);
             }
@@ -105,15 +108,14 @@ public class MemoryManagementMain extends PreferenceFragment implements Preferen
         }
 
         if (preference == mKSMPref) {
-        	FileUtil.fileWriteOneLine(KSM_RUN_FILE, mKSMPref.isChecked() ? "1" : "0");
+            Utils.fileWriteOneLine(KSM_RUN_FILE, mKSMPref.isChecked() ? "1" : "0");
             return true;
         }
 
         return false;
     }
 
-    @Override
-	public boolean onPreferenceChange(Preference preference, Object newValue) {
+    public boolean onPreferenceChange(Preference preference, Object newValue) {
         if (preference == mzRAM) {
             if (newValue != null) {
                 SystemProperties.set(ZRAM_PERSIST_PROP, (String) newValue);
