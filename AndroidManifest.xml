@@ -34,12 +34,33 @@
             </intent-filter>
         </activity>
         
-        <activity android:name=".fragments.IOScheduler" />
+        <activity 
+             android:name=".fragments.IOScheduler" 
+             android:label="@string/io_scheds_title" > 
+             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         
-        <activity android:name=".fragments.MemoryManagement" />
+        <activity 
+             android:name=".fragments.MemoryManagement" 
+             android:label="@string/memory_management_title" > 
+             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         
-        <activity android:name=".fragments.Processor" />
-
+         <activity 
+             android:name=".fragments.Processor"              
+             android:label="@string/processor_title" > 
+             <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        
         <receiver android:name=".receivers.BootReceiver" android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

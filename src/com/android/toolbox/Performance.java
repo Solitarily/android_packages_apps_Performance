@@ -18,6 +18,7 @@
 
 package com.android.toolbox;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemProperties;
@@ -27,10 +28,13 @@ import android.preference.ListPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.view.MenuItem;
 
 import com.android.toolbox.R;
 
 public class Performance extends Activity {
+	
+	
 	
     private static final String USE_DITHERING_PREF = "pref_use_dithering";
 
@@ -48,7 +52,26 @@ public class Performance extends Activity {
     
     protected void onCreate(Bundle savedInstanceState) {   
         super.onCreate(savedInstanceState);  
+        
+        setContentView(R.layout.toolbox); 
+        ActionBar actionBar = getActionBar(); 
+        actionBar.setDisplayShowHomeEnabled(false);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragement()).commit();  
+    }
+    
+    protected void onStart() {  
+        super.onStart();  
+        ActionBar actionBar = this.getActionBar();  
+        actionBar.setDisplayHomeAsUpEnabled(true);  
+    }
+    
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case android.R.id.home:
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
     
     public static class PrefsFragement extends PreferenceFragment implements OnPreferenceChangeListener{
@@ -99,4 +122,6 @@ public class Performance extends Activity {
         return true;
     }
     }
-}
+    }
+    
+    

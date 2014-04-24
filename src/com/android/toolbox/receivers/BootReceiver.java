@@ -79,7 +79,7 @@ public class BootReceiver extends BroadcastReceiver {
 
     private void configureCPU(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        for (int i = 0; i < Processor.getNumOfCpus(); i++) {
+        for (int i = 0; i < Utils.getNumOfCpus(); i++) {
 
         if (prefs.getBoolean(Processor.SOB_PREF, false) == false) {
             Log.i(TAG, "Restore disabled by user preference.");

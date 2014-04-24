@@ -17,6 +17,7 @@
 package com.android.toolbox.fragments;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,9 +27,9 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.view.MenuItem;
 
 import com.android.toolbox.R;
-import com.android.toolbox.misc.CMDProcessor;
 import com.android.toolbox.misc.Utils;
 
 //
@@ -39,7 +40,6 @@ public class Processor extends Activity {
     public static final String FREQ_CUR_PREF = "pref_cpu_freq_cur";
     public static final String SCALE_CUR_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq";
     public static final String FREQINFO_CUR_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq";
-	private static final String NUM_OF_CPUS_PATH = "/sys/devices/system/cpu/present";
     private static String FREQ_CUR_FILE = SCALE_CUR_FILE;
     public static final String GOV_PREF = "pref_cpu_gov";
     public static final String GOV_LIST_FILE = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors";
@@ -64,7 +64,26 @@ public class Processor extends Activity {
     
     protected void onCreate(Bundle savedInstanceState) {   
         super.onCreate(savedInstanceState);  
+        
+        setContentView(R.layout.toolbox); 
+        ActionBar actionBar = getActionBar(); 
+        actionBar.setDisplayShowHomeEnabled(false);
         getFragmentManager().beginTransaction().replace(android.R.id.content, new PrefsFragement()).commit();  
+    }
+    
+    protected void onStart() {  
+        super.onStart();  
+        ActionBar actionBar = this.getActionBar();  
+        actionBar.setDisplayHomeAsUpEnabled(true);  
+    }
+    
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case android.R.id.home:
+            onBackPressed();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
     
     @SuppressLint("HandlerLeak")
@@ -93,7 +112,7 @@ public class Processor extends Activity {
 
     private CurCPUThread mCurCPUThread = new CurCPUThread();
 
-	private Handler mCurCPUHandler = new Handler() {
+    private Handler mCurCPUHandler = new Handler() {
         public void handleMessage(Message msg) {
             mCurFrequencyPref.setSummary(toMHz((String) msg.obj));
         }
@@ -235,23 +254,21 @@ public class Processor extends Activity {
     }
     
     public boolean onPreferenceChange(Preference preference, Object newValue) {
-    	for (int i = 0; i < getNumOfCpus(); i++) {
         initFreqCapFiles();
-        
+
         String fname = "";
-
+        for (int i = 0; i < Utils.getNumOfCpus(); i++) { 
+        
         if (newValue != null) {
-
             if (preference == mGovernorPref) {
-                fname = GOV_FILE.replace("cpu0", "cpu" + i);
+                fname = GOV_FILE;
             } else if (preference == mMinFrequencyPref) {
-                fname = FREQ_MIN_FILE.replace("cpu0", "cpu" + i);
+                fname = FREQ_MIN_FILE;
             } else if (preference == mMaxFrequencyPref) {
-                fname = FREQ_MAX_FILE.replace("cpu0", "cpu" + i);
+                fname = FREQ_MAX_FILE;
             }
-
-            new CMDProcessor().su.runWaitFor("busybox echo " + newValue + " > "
-                    + fname); {
+          
+            if (Utils.fileWriteOneLine(fname.replace("cpu0", "cpu" + i), (String) newValue)) {
                 if (preference == mGovernorPref) {
                     mGovernorPref.setSummary(String.format(mGovernorFormat, (String) newValue));
                 } else if (preference == mMinFrequencyPref) {
@@ -262,37 +279,17 @@ public class Processor extends Activity {
                             toMHz((String) newValue)));
                 }
                 return true;
-            }  
-
+            } else {
+                return false;
             }
+          } 
         }
         return false;
     }
 
-    private static String toMHz(String mhzString) {
+    private String toMHz(String mhzString) {
         return new StringBuilder().append(Integer.valueOf(mhzString) / 1000).append(" MHz")
                 .toString();
     }
-    }
-
-    public static int getNumOfCpus() {
-        int numOfCpu = 1;
-        String numOfCpus = Utils.fileReadOneLine(NUM_OF_CPUS_PATH);
-        String[] cpuCount = numOfCpus.split("-");
-        if (cpuCount.length > 1) {
-            try {
-                int cpuStart = Integer.parseInt(cpuCount[0]);
-                int cpuEnd = Integer.parseInt(cpuCount[1]);
-
-                numOfCpu = cpuEnd - cpuStart + 1;
-
-                if (numOfCpu < 0)
-                    numOfCpu = 1;
-            } catch (NumberFormatException ex) {
-                numOfCpu = 1;
-            }
-        }
-        return numOfCpu;
-    }
-    
+  }
 }
