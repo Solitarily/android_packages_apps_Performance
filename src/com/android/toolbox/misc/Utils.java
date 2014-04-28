@@ -30,7 +30,7 @@ public class Utils {
                 br.close();
             }
         } catch (Exception e) {
-            Log.e(TAG, "IO Exception when reading file:" + fname, e);
+            Log.e(TAG, "IO Exception when reading /sys/ file", e);
         }
         return line;
     }

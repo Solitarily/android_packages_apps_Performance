@@ -252,13 +252,12 @@ public class Processor extends Activity {
         } catch (InterruptedException e) {
         }
     }
-    
+
     public boolean onPreferenceChange(Preference preference, Object newValue) {
         initFreqCapFiles();
 
         String fname = "";
-        for (int i = 0; i < Utils.getNumOfCpus(); i++) { 
-        
+
         if (newValue != null) {
             if (preference == mGovernorPref) {
                 fname = GOV_FILE;
@@ -267,8 +266,8 @@ public class Processor extends Activity {
             } else if (preference == mMaxFrequencyPref) {
                 fname = FREQ_MAX_FILE;
             }
-          
-            if (Utils.fileWriteOneLine(fname.replace("cpu0", "cpu" + i), (String) newValue)) {
+
+            if (Utils.fileWriteOneLine(fname, (String) newValue)) {
                 if (preference == mGovernorPref) {
                     mGovernorPref.setSummary(String.format(mGovernorFormat, (String) newValue));
                 } else if (preference == mMinFrequencyPref) {
@@ -282,7 +281,6 @@ public class Processor extends Activity {
             } else {
                 return false;
             }
-          } 
         }
         return false;
     }

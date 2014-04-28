@@ -79,7 +79,6 @@ public class BootReceiver extends BroadcastReceiver {
 
     private void configureCPU(Context ctx) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ctx);
-        for (int i = 0; i < Utils.getNumOfCpus(); i++) {
 
         if (prefs.getBoolean(Processor.SOB_PREF, false) == false) {
             Log.i(TAG, "Restore disabled by user preference.");
@@ -107,20 +106,16 @@ public class BootReceiver extends BroadcastReceiver {
                 frequencies = Arrays.asList(availableFrequenciesLine.split(" "));
             }
             if (maxFrequency != null && frequencies != null && frequencies.contains(maxFrequency)) {
-                new CMDProcessor().su.runWaitFor("busybox echo " + maxFrequency
-                        + " > " + Processor.FREQ_MAX_FILE.replace("cpu0", "cpu" + i));
+                Utils.fileWriteOneLine(Processor.FREQ_MAX_FILE, maxFrequency);
             }
             if (minFrequency != null && frequencies != null && frequencies.contains(minFrequency)) {
-                new CMDProcessor().su.runWaitFor("busybox echo " + minFrequency
-                        + " > " + Processor.FREQ_MIN_FILE.replace("cpu0", "cpu" + i));
+                Utils.fileWriteOneLine(Processor.FREQ_MIN_FILE, minFrequency);
             }
             if (governor != null && governors != null && governors.contains(governor)) {
-                new CMDProcessor().su.runWaitFor("busybox echo " + governor
-                        + " > " + Processor.GOV_FILE.replace("cpu0", "cpu" + i));
+                Utils.fileWriteOneLine(Processor.GOV_FILE, governor);
             }
             Log.d(TAG, "CPU settings restored.");
         }
-    }
     }
 
     private void configureIOSched(Context ctx) {
